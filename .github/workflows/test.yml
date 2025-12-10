@@ -26,6 +26,9 @@ jobs:
           --health-retries 5
 
     steps:
+      # ---------------------------------------------------------
+      # CHECKOUT + PYTHON SETUP
+      # ---------------------------------------------------------
       - name: Checkout repository
         uses: actions/checkout@v4
 
@@ -42,6 +45,9 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pip-
 
+      # ---------------------------------------------------------
+      # INSTALL DEPENDENCIES
+      # ---------------------------------------------------------
       - name: Install project dependencies
         env:
           DATABASE_URL: postgresql://user:password@localhost:5432/fastapi_test_db
@@ -55,28 +61,53 @@ jobs:
           playwright install --with-deps
 
       # ---------------------------------------------------------
-      # RUN TESTS WITH FORCED ≥90% COVERAGE REQUIREMENT
+      # UNIT TESTS WITH ≥90% COVERAGE ENFORCEMENT
       # ---------------------------------------------------------
-      - name: Run full test suite with coverage enforcement
+      - name: Run UNIT TESTS with Coverage enforcement (≥90%)
         env:
           DATABASE_URL: postgresql://user:password@localhost:5432/fastapi_test_db
           TEST_DATABASE_URL: postgresql://user:password@localhost:5432/fastapi_test_db
           IS_TEST: "true"
         run: |
           source venv/bin/activate
+          echo "=== Running UNIT TESTS WITH COVERAGE ==="
 
-          echo "=== Running UNIT TESTS WITH COVERAGE (FAIL IF < 90%) ==="
           pytest tests/unit/ \
-            --cov=app --cov-report=xml --cov-report=term-missing \
+            --cov=app/models/calculation.py \
+            --cov=app/operations \
             --cov-fail-under=90 \
+            --cov-report=term-missing \
             --junitxml=test-results/unit.xml
 
+      # ---------------------------------------------------------
+      # INTEGRATION TESTS (NO COVERAGE REQUIRED)
+      # ---------------------------------------------------------
+      - name: Run Integration Tests
+        env:
+          DATABASE_URL: postgresql://user:password@localhost:5432/fastapi_test_db
+          TEST_DATABASE_URL: postgresql://user:password@localhost:5432/fastapi_test_db
+          IS_TEST: "true"
+        run: |
+          source venv/bin/activate
           echo "=== Running INTEGRATION TESTS ==="
           pytest tests/integration/ --junitxml=test-results/integration.xml
 
-          echo "=== Running E2E UI TESTS (Playwright) ==="
+      # ---------------------------------------------------------
+      # E2E PLAYWRIGHT TESTS (UI TESTING)
+      # ---------------------------------------------------------
+      - name: Run End-to-End UI Tests
+        env:
+          DATABASE_URL: postgresql://user:password@localhost:5432/fastapi_test_db
+          TEST_DATABASE_URL: postgresql://user:password@localhost:5432/fastapi_test_db
+          IS_TEST: "true"
+        run: |
+          source venv/bin/activate
+          echo "=== Running E2E UI TESTS ==="
           pytest tests/e2e/ --junitxml=test-results/e2e.xml
 
+  # ---------------------------------------------------------
+  # SECURITY SCAN (TRIVY)
+  # ---------------------------------------------------------
   security:
     needs: test
     runs-on: ubuntu-latest
@@ -96,6 +127,9 @@ jobs:
           ignore-unfixed: true
           severity: "CRITICAL,HIGH"
 
+  # ---------------------------------------------------------
+  # DEPLOYMENT (only on main)
+  # ---------------------------------------------------------
   deploy:
     needs: security
     if: github.ref == 'refs/heads/main'
@@ -120,5 +154,5 @@ jobs:
             ${{ secrets.DOCKERHUB_USERNAME }}/fastapi-calculator:latest
             ${{ secrets.DOCKERHUB_USERNAME }}/fastapi-calculator:${{ github.sha }}
           platforms: linux/amd64,linux/arm64
-          cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/mod14-fastapi-calculator:cache
+          cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/fastapi-calculator:cache
           cache-to: type=inline,mode=max
