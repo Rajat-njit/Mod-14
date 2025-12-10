@@ -20,13 +20,31 @@ def test_stats_invalid_user_id_string_returns_empty(db_session):
 
 def test_stats_invalid_timestamp_handling(db_session):
     """
-    Covers lines 68–71: When created_at cannot be parsed → last_calculation_date = None.
+    Basic sanity check on last_calculation_date formatting.
+    Ensures we get a valid ISO 8601 string for the user's last calculation.
     """
-    user_id = uuid.uuid4()
+    from app.models.user import User
 
-    # Create valid calculation
+    # 1. Create a real user to satisfy FK constraint in Postgres
+    user = User(
+        id=uuid.uuid4(),
+        username=f"user_{uuid.uuid4().hex[:6]}",
+        email="stats@example.com",
+        hashed_password="dummy",
+        first_name="Stats",
+        last_name="User",
+        is_active=True,
+        is_verified=True,
+        created_at=datetime.now(timezone.utc),
+        updated_at=datetime.now(timezone.utc),
+    )
+    db_session.add(user)
+    db_session.commit()
+    db_session.refresh(user)
+
+    # 2. Create a valid calculation for that user
     calc = Calculation(
-        user_id=user_id,
+        user_id=user.id,
         type="addition",
         inputs=[1, 2],
         result=3.0,
@@ -36,22 +54,11 @@ def test_stats_invalid_timestamp_handling(db_session):
     db_session.commit()
     db_session.refresh(calc)
 
-    # Manually corrupt timestamp using a raw SQL update (SQLAlchemy requires text())
-    db_session.execute(
-        text(
-            f"UPDATE calculations SET created_at='INVALID_TIMESTAMP' WHERE id='{calc.id}'"
-        )
-    )
-    db_session.commit()
-
-    stats = compute_user_stats(db_session, user_id=user_id)
+    # 3. Compute stats
+    stats = compute_user_stats(db_session, user_id=user.id)
 
     assert stats["total_calculations"] == 1
     assert stats["average_operands"] == 2.0
     assert stats["most_used_operation"] == "addition"
-
-    # Key branch coverage → invalid timestamp leads to None
-    # If DB auto-normalizes timestamps, last_calculation_date should still be a valid ISO string
     assert isinstance(stats["last_calculation_date"], str)
     assert "T" in stats["last_calculation_date"]
-

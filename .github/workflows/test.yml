@@ -61,23 +61,30 @@ jobs:
           playwright install --with-deps
 
       # ---------------------------------------------------------
-      # UNIT TESTS WITH ≥90% COVERAGE ENFORCEMENT
+      # UNIT TESTS WITH FULL APP COVERAGE (≥90% REQUIRED)
       # ---------------------------------------------------------
-      - name: Run UNIT TESTS with Coverage enforcement (≥90%)
+      - name: Run Backend Coverage Tests (Professor Requirement)
         env:
           DATABASE_URL: postgresql://user:password@localhost:5432/fastapi_test_db
           TEST_DATABASE_URL: postgresql://user:password@localhost:5432/fastapi_test_db
           IS_TEST: "true"
         run: |
           source venv/bin/activate
-          echo "=== Running UNIT TESTS WITH COVERAGE ==="
+          echo "=== Running FULL BACKEND COVERAGE TESTS (≥90%) ==="
 
           pytest tests/unit/ \
-            --cov=app/models/calculation.py \
-            --cov=app/operations \
+            --cov=app \
             --cov-fail-under=90 \
             --cov-report=term-missing \
+            --cov-report=html \
             --junitxml=test-results/unit.xml
+
+      - name: Upload Coverage Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-html
+          path: htmlcov/
+
 
       # ---------------------------------------------------------
       # INTEGRATION TESTS (NO COVERAGE REQUIRED)

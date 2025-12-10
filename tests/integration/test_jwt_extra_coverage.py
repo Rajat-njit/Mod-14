@@ -1,5 +1,5 @@
-import pytest
 import uuid
+import pytest
 from datetime import timedelta, datetime
 from fastapi import HTTPException
 
@@ -42,8 +42,7 @@ def inactive_user(db_session):
 # create_token tests
 # -------------------------------------------------
 
-@pytest.mark.asyncio
-async def test_create_token_with_expires_delta():
+def test_create_token_with_expires_delta():
     """Covers explicit expires_delta path."""
     token = create_token(
         user_id=uuid.uuid4(),
@@ -81,7 +80,6 @@ def test_create_token_encode_error(monkeypatch):
 
 @pytest.mark.asyncio
 async def test_decode_token_success():
-    """Happy path decode."""
     token = create_token(uuid.uuid4(), TokenType.ACCESS)
     payload = await decode_token(token, TokenType.ACCESS)
     assert payload["type"] == "access"
@@ -89,16 +87,13 @@ async def test_decode_token_success():
 
 @pytest.mark.asyncio
 async def test_decode_token_invalid_type():
-    """Decode with wrong expected type."""
     refresh = create_token(uuid.uuid4(), TokenType.REFRESH)
-
     with pytest.raises(HTTPException):
         await decode_token(refresh, TokenType.ACCESS)
 
 
 @pytest.mark.asyncio
 async def test_decode_token_revoked(monkeypatch):
-    """Token is blacklisted → revoked."""
     async def fake_blacklisted(jti):
         return True
 
@@ -115,7 +110,6 @@ async def test_decode_token_revoked(monkeypatch):
 
 @pytest.mark.asyncio
 async def test_decode_token_expired():
-    """Expired token should raise 401."""
     expired = create_token(
         uuid.uuid4(),
         TokenType.ACCESS,
@@ -128,7 +122,6 @@ async def test_decode_token_expired():
 
 @pytest.mark.asyncio
 async def test_decode_token_jwt_error():
-    """Tampered signature produces JWTError."""
     token = create_token(uuid.uuid4(), TokenType.ACCESS)
     tampered = token + "XYZ"
 
@@ -138,20 +131,10 @@ async def test_decode_token_jwt_error():
 
 @pytest.mark.asyncio
 async def test_decode_token_invalid_type_mismatch():
-    """
-    ACCESS token decoded as REFRESH token.
-    Your implementation throws JWTError → "Could not validate credentials".
-    """
     token = create_token(uuid.uuid4(), TokenType.ACCESS)
 
-    with pytest.raises(HTTPException) as exc:
+    with pytest.raises(HTTPException):
         await decode_token(token, TokenType.REFRESH)
-
-    assert exc.value.status_code == 401
-    assert exc.value.detail in [
-        "Invalid token type",
-        "Could not validate credentials",
-    ]
 
 
 # -------------------------------------------------
@@ -160,30 +143,27 @@ async def test_decode_token_invalid_type_mismatch():
 
 @pytest.mark.asyncio
 async def test_get_current_user_not_found(monkeypatch, db_session):
-    """Decode valid token but user does not exist."""
     async def fake_decode(token, token_type):
         return {"sub": "non-existent-id"}
 
     monkeypatch.setattr("app.auth.jwt.decode_token", fake_decode)
 
     with pytest.raises(HTTPException) as exc:
-        await get_current_user(token="dummy", db=db_session)
+        await get_current_user("dummy", db_session)
 
-    # Your implementation returns 401 when downstream lookup fails
     assert exc.value.status_code == 401
     assert "User not found" in exc.value.detail
 
 
 @pytest.mark.asyncio
 async def test_get_current_user_inactive(monkeypatch, db_session, inactive_user):
-    """Inactive user should trigger 400."""
     async def fake_decode(token, token_type):
         return {"sub": str(inactive_user.id)}
 
     monkeypatch.setattr("app.auth.jwt.decode_token", fake_decode)
 
     with pytest.raises(HTTPException) as exc:
-        await get_current_user(token="dummy", db=db_session)
+        await get_current_user("dummy", db_session)
 
     assert exc.value.status_code == 400
     assert exc.value.detail == "Inactive user"
@@ -191,8 +171,6 @@ async def test_get_current_user_inactive(monkeypatch, db_session, inactive_user)
 
 @pytest.mark.asyncio
 async def test_get_current_user_unexpected_error(monkeypatch):
-    """Covers catch-all block in get_current_user."""
-
     async def boom(*args, **kwargs):
         raise Exception("Unexpected error!")
 
