@@ -2,6 +2,7 @@
 {% block title %}Dashboard{% endblock %}
 
 {% block content %}
+<h1 data-testid="dashboard-title" class="hidden">Dashboard</h1>
 <!-- Error/Success Alerts -->
 <div 
   id="errorAlert" 
@@ -59,14 +60,15 @@
     </svg>
     New Calculation
   </h2>
-  <form id="calculationForm" class="space-y-5">
+  <form id="calculationForm" class="space-y-5" data-testid="calc-form">
     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
       <!-- Type -->
       <div>
         <label for="calcType" class="block text-sm font-medium text-gray-700 mb-1">Operation Type</label>
         <select 
           id="calcType" 
-          name="type" 
+          name="type"
+          data-testid="calc-type" 
           class="block w-full rounded-md border-gray-300 shadow-sm 
                  focus:border-blue-500 focus:ring-blue-500 py-2"
         >
@@ -88,7 +90,8 @@
         <input 
           type="text" 
           id="calcInputs" 
-          name="inputs" 
+          name="inputs"
+          data-testid="calc-inputs" 
           placeholder="e.g. 5, 10, 15"
           class="block w-full rounded-md border-gray-300 shadow-sm 
                  focus:border-blue-500 focus:ring-blue-500 py-2"
@@ -111,6 +114,8 @@
     </div>
   </form>
 </div>
+
+<div id="calcResultPanel" data-testid="calc-result-panel" class="hidden"></div>
 
 <!-- Calculations History Card -->
 <div 

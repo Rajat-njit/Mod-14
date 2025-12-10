@@ -1,4 +1,4 @@
-name: CI/CD
+name: FastAPI Calculator – CI/CD Pipeline
 
 on:
   push:
@@ -9,13 +9,14 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+
     services:
       postgres:
-        image: postgres:latest
+        image: postgres:15
         env:
           POSTGRES_USER: user
           POSTGRES_PASSWORD: password
-          POSTGRES_DB: mytestdb  # <-- Dedicated test DB name
+          POSTGRES_DB: fastapi_test_db
         ports:
           - 5432:5432
         options: >-
@@ -23,84 +24,101 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
+
     steps:
-      - uses: actions/checkout@v3
-      
-      - uses: actions/setup-python@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
         with:
-          python-version: '3.10'
-          
-      - uses: actions/cache@v3
+          python-version: "3.10"
+
+      - name: Cache pip dependencies
+        uses: actions/cache@v3
         with:
           path: ~/.cache/pip
           key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
           restore-keys: |
             ${{ runner.os }}-pip-
-      
-      - name: Install dependencies
+
+      - name: Install project dependencies
         env:
-          DATABASE_URL: postgresql://user:password@localhost:5432/mytestdb
+          DATABASE_URL: postgresql://user:password@localhost:5432/fastapi_test_db
+          TEST_DATABASE_URL: postgresql://user:password@localhost:5432/fastapi_test_db
+          IS_TEST: "true"
         run: |
           python -m venv venv
           source venv/bin/activate
           pip install --upgrade pip
           pip install -r requirements.txt
-          playwright install  # if you use Playwright for e2e tests
-      
-      - name: Run tests
+          playwright install --with-deps
+
+      # ---------------------------------------------------------
+      # RUN TESTS WITH FORCED ≥90% COVERAGE REQUIREMENT
+      # ---------------------------------------------------------
+      - name: Run full test suite with coverage enforcement
         env:
-          DATABASE_URL: postgresql://user:password@localhost:5432/mytestdb
+          DATABASE_URL: postgresql://user:password@localhost:5432/fastapi_test_db
+          TEST_DATABASE_URL: postgresql://user:password@localhost:5432/fastapi_test_db
+          IS_TEST: "true"
         run: |
           source venv/bin/activate
-          
-          # 1) Unit tests
-          pytest tests/unit/ --cov=src --junitxml=test-results/junit.xml
-          
-          # 2) Integration tests
-          pytest tests/integration/
-          
-          # 3) E2E or other tests
-          pytest tests/e2e/
+
+          echo "=== Running UNIT TESTS WITH COVERAGE (FAIL IF < 90%) ==="
+          pytest tests/unit/ \
+            --cov=app --cov-report=xml --cov-report=term-missing \
+            --cov-fail-under=90 \
+            --junitxml=test-results/unit.xml
+
+          echo "=== Running INTEGRATION TESTS ==="
+          pytest tests/integration/ --junitxml=test-results/integration.xml
+
+          echo "=== Running E2E UI TESTS (Playwright) ==="
+          pytest tests/e2e/ --junitxml=test-results/e2e.xml
 
   security:
     needs: test
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v4
-      
-      - name: Build image
-        run: docker build -t app:test .
-      
+
+      - name: Build image for security scan
+        run: docker build -t fastapi-calculator:test .
+
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: 'app:test'
-          format: 'table'
-          exit-code: '1'
+          image-ref: "fastapi-calculator:test"
+          format: "table"
+          exit-code: "1"
           ignore-unfixed: true
-          severity: 'CRITICAL,HIGH'
-  
+          severity: "CRITICAL,HIGH"
+
   deploy:
     needs: security
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     environment: production
+
     steps:
       - uses: actions/checkout@v4
-      
       - uses: docker/setup-buildx-action@v3
-      
-      - uses: docker/login-action@v3
+
+      - name: Log in to DockerHub
+        uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-          
-      - uses: docker/build-push-action@v5
+
+      - name: Build & Push Production Image
+        uses: docker/build-push-action@v5
         with:
           push: true
           tags: |
-            kaw393939/601_module9:latest
-            kaw393939/601_module9:${{ github.sha }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/fastapi-calculator:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/fastapi-calculator:${{ github.sha }}
           platforms: linux/amd64,linux/arm64
-          cache-from: type=registry,ref=kaw393939/601_module9:cache
+          cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/mod14-fastapi-calculator:cache
           cache-to: type=inline,mode=max

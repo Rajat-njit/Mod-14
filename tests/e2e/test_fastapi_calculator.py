@@ -318,3 +318,112 @@ def test_model_division():
     with pytest.raises(ValueError):
         calc_zero = Calculation.create("division", dummy_user_id, [100, 0])
         calc_zero.get_result()
+    
+def test_create_calculation_exponentiation(base_url: str):
+    user_data = {
+        "first_name": "Expo",
+        "last_name": "Tester",
+        "email": f"expo{uuid4()}@example.com",
+        "username": f"expo_{uuid4()}",
+        "password": "SecurePass123!",
+        "confirm_password": "SecurePass123!"
+    }
+    token_data = register_and_login(base_url, user_data)
+    headers = {"Authorization": f"Bearer {token_data['access_token']}"}
+
+    url = f"{base_url}/calculations"
+
+    payload = {"type": "exponentiation", "inputs": [2, 3]}
+    response = requests.post(url, json=payload, headers=headers)
+
+    assert response.status_code == 201
+    assert response.json()["result"] == 8  # 2^3
+
+def test_create_calculation_power(base_url: str):
+    user_data = {
+        "first_name": "Power",
+        "last_name": "User",
+        "email": f"pow{uuid4()}@example.com",
+        "username": f"pow_{uuid4()}",
+        "password": "SecurePass123!",
+        "confirm_password": "SecurePass123!"
+    }
+    token = register_and_login(base_url, user_data)["access_token"]
+    headers = {"Authorization": f"Bearer {token}"}
+
+    payload = {"type": "power", "inputs": [5, 3]}  # 5^3 = 125
+    response = requests.post(f"{base_url}/calculations", json=payload, headers=headers)
+
+    assert response.status_code == 201
+    assert response.json()["result"] == 125
+
+def test_create_calculation_modulus(base_url: str):
+    user_data = {
+        "first_name": "Mod",
+        "last_name": "Tester",
+        "email": f"mod{uuid4()}@example.com",
+        "username": f"mod_{uuid4()}",
+        "password": "SecurePass123!",
+        "confirm_password": "SecurePass123!"
+    }
+    token = register_and_login(base_url, user_data)["access_token"]
+    headers = {"Authorization": f"Bearer {token}"}
+
+    payload = {"type": "modulus", "inputs": [10, 3]}  # 10 % 3 = 1
+    response = requests.post(f"{base_url}/calculations", json=payload, headers=headers)
+
+    assert response.status_code == 201
+    assert response.json()["result"] == 1
+
+def test_power_wrong_number_of_inputs(base_url: str):
+    token = register_and_login(base_url, {
+        "first_name": "Err",
+        "last_name": "A",
+        "email": f"erra{uuid4()}@example.com",
+        "username": f"erra_{uuid4()}",
+        "password": "SecurePass123!",
+        "confirm_password": "SecurePass123!"
+    })["access_token"]
+
+    headers = {"Authorization": f"Bearer {token}"}
+
+    response = requests.post(
+        f"{base_url}/calculations",
+        json={"type": "power", "inputs": [5]},  # only one input
+        headers=headers
+    )
+
+    assert response.status_code == 400
+
+def test_modulus_division_by_zero_api(base_url: str):
+    token = register_and_login(base_url, {
+        "first_name": "Err",
+        "last_name": "B",
+        "email": f"errb{uuid4()}@example.com",
+        "username": f"errb_{uuid4()}",
+        "password": "SecurePass123!",
+        "confirm_password": "SecurePass123!"
+    })["access_token"]
+
+    headers = {"Authorization": f"Bearer {token}"}
+
+    response = requests.post(
+        f"{base_url}/calculations",
+        json={"type": "modulus", "inputs": [10, 0]},
+        headers=headers
+    )
+
+    assert response.status_code == 400
+
+def test_model_exponentiation():
+    calc = Calculation.create("exponentiation", uuid4(), [2, 3])
+    assert calc.get_result() == 8
+
+def test_model_power():
+    calc = Calculation.create("power", uuid4(), [5, 2])
+    assert calc.get_result() == 25
+
+def test_model_modulus():
+    calc = Calculation.create("modulus", uuid4(), [10, 4])
+    assert calc.get_result() == 2
+
