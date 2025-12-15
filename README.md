@@ -43,7 +43,7 @@ This README is intentionally detailed because it is used for grading and explain
 
 ---
 
-## 2) Assignment Requirements Checklist (Professor Rubric Mapping)
+## 2) Project Requirements Checklist
 
 ### ✅ Choose and Implement a New Feature
 
@@ -302,6 +302,9 @@ This design allows:
 * Validates UUID
 * Deletes record if owned by user
 
+---
+
+🧮 Calculation BREAD Endpoints
 
 
 | BREAD      | HTTP Method | Endpoint                  | Auth Required | Description                                  |
@@ -344,6 +347,16 @@ This design allows:
 * Protected
 * Generates CSV from DB records
 * Returns file download via `StreamingResponse`
+  
+---
+
+📊 Reporting & History Endpoints (New Feature)
+
+| HTTP Method | Endpoint                   | Auth Required | Description                                       |
+| ----------- | -------------------------- | ------------- | ------------------------------------------------- |
+| GET         | `/calculations/stats`      | ✅ Yes         | Returns user calculation statistics and summaries |
+| GET         | `/calculations/export`     | ✅ Yes         | Export calculation history as CSV                 |
+| GET         | `/calculations/report.csv` | ✅ Yes         | Alternate CSV export route                        |
 
 ---
 
@@ -364,6 +377,20 @@ Dashboard behavior:
 * uses API to create calculations + show history
 * stats panel calls `/calculations/stats`
 * download button calls `/calculations/export`
+
+---
+
+🌐 Frontend / UI Routes (Template-Based)
+
+| HTTP Method | Endpoint                    | Purpose           |
+| ----------- | --------------------------- | ----------------- |
+| GET         | `/`                         | Landing page      |
+| GET         | `/login`                    | Login page        |
+| GET         | `/register`                 | Registration page |
+| GET         | `/dashboard`                | User dashboard    |
+| GET         | `/dashboard/view/{calc_id}` | View calculation  |
+| GET         | `/dashboard/edit/{calc_id}` | Edit calculation  |
+
 
 ---
 
@@ -628,10 +655,3 @@ This project demonstrates an end-to-end FastAPI system including:
 Everything is implemented in a way that is consistent with professional backend engineering practices and aligns with the assignment rubric.
 
 ---
-
-If you want, I can also add these two “grading boost” sections (they help a LOT):
-
-1. **“API Endpoint Summary Table”** (route, method, auth, purpose)
-2. **“Testing Coverage Map”** (module → which test file covers it)
-
-Just say **“add tables”** and I’ll append them cleanly.
