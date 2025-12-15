@@ -396,6 +396,17 @@ Dashboard behavior:
 
 ## 11) Testing Strategy (Unit + Integration + E2E)
 
+This project follows a layered testing strategy aligned with industry best practices, ensuring correctness at the logic, API, and user-experience levels.
+
+🧱 Testing Pyramid Overview
+
+| Layer                 | Purpose                       | Scope                                |
+| --------------------- | ----------------------------- | ------------------------------------ |
+| **Unit Tests**        | Validate isolated logic       | Models, services, schemas, utilities |
+| **Integration Tests** | Validate API + DB interaction | Routes, auth, persistence            |
+| **E2E Tests**         | Validate real user flows      | UI + API + auth                      |
+
+
 ### Unit Tests (`tests/unit/`)
 
 Focus:
@@ -411,6 +422,26 @@ Examples:
 * schema validators for calculation types and password rules
 * model token verification edge cases
 
+📌 Unit Test Coverage Map
+
+| Test File                             | Covers                           | Application File             |
+| ------------------------------------- | -------------------------------- | ---------------------------- |
+| `test_calculator.py`                  | Basic arithmetic logic           | `app/models/calculation.py`  |
+| `test_calculation_factory_unit.py`    | Factory pattern mapping          | `Calculation.create()`       |
+| `test_calculation_operations_unit.py` | Add/Sub/Mul/Div/Power/Modulus    | Operation subclasses         |
+| `test_calculation_schema_unit.py`     | Input validation                 | `app/schemas/calculation.py` |
+| `test_dependencies_unit.py`           | Auth dependency logic            | `app/auth/dependencies.py`   |
+| `test_jwt_unit.py`                    | Token creation & decoding        | `app/auth/jwt.py`            |
+| `test_jwt_edge_cases_unit.py`         | Expired, invalid, revoked tokens | `decode_token()`             |
+| `test_user_unit.py`                   | User model behavior              | `app/models/user.py`         |
+| `test_user_register_unit.py`          | Registration rules               | `User.register()`            |
+| `test_user_authenticate_unit.py`      | Login logic                      | `User.authenticate()`        |
+| `test_user_verify_token_unit.py`      | Token verification               | `User.verify_token()`        |
+| `test_schema_base_unit.py`            | Base schema validation           | `app/schemas/base.py`        |
+| `test_user_schema_unit.py`            | Password rules                   | `app/schemas/user.py`        |
+| `test_statistics_service_unit.py`     | Stats computation                | `compute_user_stats()`       |
+
+
 ### Integration Tests (`tests/integration/`)
 
 Focus:
@@ -418,6 +449,25 @@ Focus:
 * real FastAPI app routing + DB behavior
 * request/response validation
 * authentication handling across real endpoints
+
+📌 Integration Test Coverage Map
+
+| Test File                      | Covers                        | Application Area       |
+| ------------------------------ | ----------------------------- | ---------------------- |
+| `test_auth_routes.py`          | Register + login routes       | `/auth/*`              |
+| `test_user_auth.py`            | Authenticated access          | JWT + DB               |
+| `test_calculation_routes.py`   | CRUD calculations             | `/calculations`        |
+| `test_api_new_operations.py`   | Advanced ops (power, modulus) | Calculation extensions |
+| `test_calculation.py`          | DB persistence                | Calculation model      |
+| `test_calculation_schema.py`   | Request/response schema       | Calculation schemas    |
+| `test_statistics_service.py`   | Stats endpoint                | `/calculations/stats`  |
+| `test_api_stats_and_report.py` | CSV + stats endpoints         | Export & reporting     |
+| `test_dependencies.py`         | Dependency injection          | Auth dependencies      |
+| `test_database.py`             | DB initialization             | `database.py`          |
+| `test_schema_base.py`          | Shared schema validation      | Base schemas           |
+| `test_user.py`                 | User DB behavior              | User model             |
+| `test_jwt_extra_coverage.py`   | JWT edge scenarios            | Auth security          |
+
 
 ### E2E Tests (`tests/e2e/`)
 
@@ -432,6 +482,15 @@ Focus:
   * verify history update
   * verify stats panel
   * verify CSV download
+ 
+📌 E2E Test Coverage Map
+
+| Test File                    | Covers             | Scenario          |
+| ---------------------------- | ------------------ | ----------------- |
+| `test_fastapi_calculator.py` | API + UI flow      | Login → Calculate |
+| `test_ui_playwright.py`      | Browser automation | Full UI journey   |
+| `test_e2e.bk`                | Backup scenarios   | Regression safety |
+
 
 ---
 
