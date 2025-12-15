@@ -1,27 +1,4 @@
 # FastAPI Calculator — Full-Stack Web App with JWT Auth, BREAD Operations, Reporting, and CI/CD
-
-## Table of Contents
-
-1. Project Summary
-2. Assignment Requirements Checklist
-3. Key Features Implemented
-4. Tech Stack
-5. High-Level Architecture
-6. Security Implementation
-7. Database Design and ORM Models
-8. API Design (BREAD Endpoints)
-9. Reporting & Statistics Feature
-10. Frontend Pages and Flow
-11. Testing Strategy (Unit + Integration + E2E)
-12. Test Infrastructure (`conftest.py`, DB isolation, Playwright)
-13. Code Structure
-14. CI/CD Pipeline (GitHub Actions `.yml`)
-15. Dockerization (Dockerfile + runtime behavior)
-16. Configuration (`.env`, settings, requirements)
-17. How to Run Locally
-18. How to Run Tests and Coverage
-19. Notes on Coverage and Grading Considerations
-
 ---
 
 ## 1) Project Summary
@@ -40,6 +17,68 @@ The system supports:
 * CI/CD pipeline that runs tests, enforces coverage, security scanning, and deploys Docker image to Docker Hub
 
 This README is intentionally detailed because it is used for grading and explains implementation decisions and rubric alignment.
+
+📁 Project Structure
+
+Final_Project/
+│
+├── app/
+│   ├── __init__.py
+│   │
+│   ├── main.py
+│   │
+│   ├── core/
+│   │   ├── __init__.py
+│   │   └── config.py
+│   │
+│   ├── database.py
+│   ├── database_init.py
+│   │
+│   ├── auth/
+│   │   ├── __init__.py
+│   │   ├── jwt.py
+│   │   └── dependencies.py
+│   │
+│   ├── models/
+│   │   ├── __init__.py
+│   │   ├── user.py
+│   │   └── calculation.py
+│   │
+│   ├── schemas/
+│   │   ├── __init__.py
+│   │   ├── base.py
+│   │   ├── user.py
+│   │   ├── calculation.py
+│   │   ├── token.py
+│   │   └── stats.py
+│   │
+│   ├── services/
+│   │   └── statistics_service.py
+│   │
+│   ├── operations/
+│   │   └── __init__.py
+│   │
+│   ├── static/
+│   │   └── (HTML/CSS/JS assets)
+│   │
+│   └── templates/
+│       └── (Jinja2 HTML templates)
+│
+├── tests/
+│   ├── unit/
+│   ├── integration/
+│   └── e2e/
+│
+├── Dockerfile
+├── requirements.txt
+├── pytest.ini
+├── .env.example
+├── .github/
+│   └── workflows/
+│       └── test.yml
+│
+└── README.md
+
 
 ---
 
