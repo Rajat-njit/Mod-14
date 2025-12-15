@@ -1,10 +1,4 @@
-Here is the fully formatted, professional version of your **README.md**. I have structured it with proper Markdown syntax, code highlighting, tables, and emojis to ensure it renders beautifully on GitHub or GitLab.
 
-You can copy the code block below directly into your `README.md` file.
-
------
-
-````markdown
 # FastAPI Calculator — Full-Stack Web App with JWT Auth, BREAD Operations, Reporting, and CI/CD
 
 ![Python](https://img.shields.io/badge/Python-3.10%2B-blue?style=for-the-badge&logo=python)
