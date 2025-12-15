@@ -102,7 +102,6 @@ Contains:
 * CSV export & reporting endpoints
 * Lifespan events (DB initialization)
 
-> UI routes are explicitly excluded from coverage using `# pragma: no cover`.
 
 ---
 
@@ -230,39 +229,7 @@ Uses **Pydantic v2**:
 
 ---
 
-# 🧪 Testing Structure (Aligned with App)
 
-```
-tests/
-├── unit/          → Pure logic tests (no DB, no HTTP)
-├── integration/   → API + DB + auth
-└── e2e/           → Browser-based user flows
-```
-
-### Why This Matters
-
-✔ Matches the **testing pyramid**
-✔ Improves CI reliability
-✔ Prevents regressions
-✔ Demonstrates professional engineering discipline
-
----
-
-# 📦 Infrastructure & Tooling
-
-## 🔹 Docker
-
-* Fully dockerized application
-* Production-ready image
-* Used in CI security scanning
-
-## 🔹 GitHub Actions
-
-* Unit test coverage enforcement
-* Integration & E2E tests
-* Trivy vulnerability scanning
-* Docker image build & push
-* 
 ---
 
 ## 2) Project Requirements Checklist
