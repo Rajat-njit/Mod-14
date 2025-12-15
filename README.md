@@ -229,8 +229,205 @@ Uses **Pydantic v2**:
 
 ---
 
+Perfect — below is a **clean, professional, copy-paste ready section** you can directly add to your **README.md**.
+It contains **only what you asked for**, written in a way professors expect.
 
 ---
+
+## ▶️ Running the Application Locally
+
+### 1️⃣ Clone the Repository
+
+```bash
+git clone <YOUR_GITHUB_REPOSITORY_URL>
+cd final_project
+```
+
+---
+
+### 2️⃣ Create and Activate Virtual Environment
+
+```bash
+python -m venv venv
+source venv/bin/activate   # macOS / Linux
+# venv\Scripts\activate    # Windows
+```
+
+---
+
+### 3️⃣ Install Dependencies
+
+All required dependencies are listed and pinned in `requirements.txt`.
+
+```bash
+pip install --upgrade pip
+pip install -r requirements.txt
+```
+
+---
+
+### 4️⃣ Configure Environment Variables
+
+Create a `.env` file in the project root.
+
+```env
+DATABASE_URL=postgresql://user:password@localhost:5432/fastapi_db
+TEST_DATABASE_URL=postgresql://user:password@localhost:5432/fastapi_test_db
+
+JWT_SECRET_KEY=your_access_secret
+JWT_REFRESH_SECRET_KEY=your_refresh_secret
+ALGORITHM=HS256
+
+ACCESS_TOKEN_EXPIRE_MINUTES=15
+REFRESH_TOKEN_EXPIRE_DAYS=7
+
+BCRYPT_ROUNDS=12
+IS_TEST=false
+```
+
+---
+
+### 5️⃣ Start the Application
+
+```bash
+uvicorn app.main:app --reload
+```
+
+Application will be available at:
+
+* **Web UI:** [http://127.0.0.1:8000](http://127.0.0.1:8000)
+* **API Docs (Swagger):** [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
+* **Health Check:** [http://127.0.0.1:8000/health](http://127.0.0.1:8000/health)
+
+---
+
+## 🧪 Running Tests Locally
+
+This project follows a **layered testing strategy** (Unit → Integration → E2E).
+
+---
+
+### 🔹 Run Unit Tests with Coverage Enforcement
+
+```bash
+pytest tests/unit \
+  --cov=app \
+  --cov-report=term-missing \
+  --cov-fail-under=90
+```
+
+✔ Enforces **≥90% backend coverage**, matching CI requirements.
+
+---
+
+### 🔹 Run Integration Tests
+
+```bash
+pytest tests/integration
+```
+
+✔ Validates API routes and database interactions.
+
+---
+
+### 🔹 Run End-to-End (E2E) Tests
+
+```bash
+playwright install
+pytest tests/e2e
+```
+
+✔ Tests full user flows (login → dashboard → calculation → export).
+
+---
+
+## 🐳 Docker Hub Repository
+
+The application is fully **Dockerized** and automatically built via **GitHub Actions**.
+
+🔗 **Docker Hub Repository:**
+
+```
+https://hub.docker.com/r/<YOUR_DOCKERHUB_USERNAME>/fastapi-calculator
+```
+
+### Pull and Run the Image
+
+```bash
+docker pull <YOUR_DOCKERHUB_USERNAME>/fastapi-calculator:latest
+docker run -p 8000:8000 <YOUR_DOCKERHUB_USERNAME>/fastapi-calculator
+```
+
+---
+
+## 📦 requirements.txt
+
+All dependencies required to run, test, and deploy the application are defined below:
+
+```txt
+# --- Core Framework ---
+fastapi==0.115.8
+uvicorn==0.34.0
+starlette==0.45.3
+
+# --- Database + ORM ---
+SQLAlchemy==2.0.38
+psycopg2-binary==2.9.10
+
+# --- Pydantic & Settings ---
+pydantic==2.10.6
+pydantic-settings==2.7.1
+pydantic_core==2.27.2
+annotated-types==0.7.0
+
+# --- Authentication (JWT + Password Hashing) ---
+python-jose==3.3.0
+passlib==1.7.4
+bcrypt==4.2.1
+python-multipart==0.0.20
+
+# --- Email Validation ---
+email_validator==2.2.0
+dnspython==2.7.0
+
+# --- Utilities ---
+requests==2.32.3
+python-dotenv==1.0.1
+tenacity==9.0.0
+Faker==36.1.0
+typing_extensions==4.12.2
+
+# --- Testing ---
+pytest==8.3.4
+pytest-cov==6.0.0
+coverage==7.6.11
+httpx==0.28.1
+
+# --- E2E Testing (Playwright) ---
+playwright==1.50.0
+pyee==12.1.1
+
+# --- Internal C libs ---
+cffi==1.17.1
+pycparser==2.22
+cryptography==44.0.0
+
+# --- Networking / HTTP ---
+h11==0.14.0
+httpcore==1.0.7
+sniffio==1.3.1
+urllib3==2.3.0
+idna==3.10
+charset-normalizer==3.4.1
+
+# --- Misc ---
+tzdata==2025.1
+MarkupSafe==3.0.2
+Jinja2==3.1.5
+```
+
+---
+
 
 ## 2) Project Requirements Checklist
 
