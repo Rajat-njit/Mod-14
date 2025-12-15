@@ -20,7 +20,7 @@ This README is intentionally detailed because it is used for grading and explain
 
 📁 Project Structure
 
-Final_Project/
+module14_is601/
 │
 ├── app/
 │   ├── __init__.py
@@ -78,6 +78,7 @@ Final_Project/
 │       └── test.yml
 │
 └── README.md
+
 
 
 ---
