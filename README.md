@@ -1,5 +1,17 @@
+Here is the fully formatted, professional version of your **README.md**. I have structured it with proper Markdown syntax, code highlighting, tables, and emojis to ensure it renders beautifully on GitHub or GitLab.
+
+You can copy the code block below directly into your `README.md` file.
+
+-----
+
+````markdown
 # FastAPI Calculator — Full-Stack Web App with JWT Auth, BREAD Operations, Reporting, and CI/CD
----
+
+![Python](https://img.shields.io/badge/Python-3.10%2B-blue?style=for-the-badge&logo=python)
+![FastAPI](https://img.shields.io/badge/FastAPI-0.115.8-009688?style=for-the-badge&logo=fastapi)
+![Docker](https://img.shields.io/badge/Docker-Enabled-2496ED?style=for-the-badge&logo=docker)
+![Coverage](https://img.shields.io/badge/Coverage-90%25%2B-brightgreen?style=for-the-badge)
+![Build](https://img.shields.io/badge/Build-Passing-success?style=for-the-badge)
 
 ## 1) Project Summary
 
@@ -7,48 +19,46 @@ This project is a full-stack web application implemented with **FastAPI** (backe
 
 The system supports:
 
-* Secure user registration and login
-* JWT-based authentication and authorization
-* Performing multiple calculation types (basic + advanced)
-* Persisting calculation history per user
+* **Secure user registration and login**
+* **JWT-based authentication and authorization**
+* **Multiple calculation types** (basic + advanced arithmetic)
+* **Persisting calculation history** per user
 * **BREAD operations** on calculation resources (Browse, Read, Edit, Add, Delete)
-* Reporting / export features (user statistics + CSV export)
-* A full test suite (unit + integration + end-to-end via Playwright)
-* CI/CD pipeline that runs tests, enforces coverage, security scanning, and deploys Docker image to Docker Hub
+* **Reporting / export features** (user statistics + CSV export)
+* **Full test suite** (unit + integration + end-to-end via Playwright)
+* **CI/CD pipeline** that runs tests, enforces coverage, security scanning, and deploys Docker image to Docker Hub
 
-This README is intentionally detailed because it is used for grading and explains implementation decisions and rubric alignment.
-
+> **Note:** This README is intentionally detailed because it is used for grading and explains implementation decisions and rubric alignment.
 
 ---
 
 ## 📁 Project Structure
 
-```
+```text
 module14_is601/
 │
 ├── app/
 │   ├── __init__.py
+│   ├── main.py                     # Application entry point & route definitions
 │   │
-│   ├── main.py
-│   │
-│   ├── core/
+│   ├── core/                       # Global config & settings
 │   │   ├── __init__.py
 │   │   └── config.py
 │   │
-│   ├── database.py
+│   ├── database.py                 # SQLAlchemy engine & session setup
 │   ├── database_init.py
 │   │
-│   ├── auth/
+│   ├── auth/                       # Security & Auth logic
 │   │   ├── __init__.py
 │   │   ├── jwt.py
 │   │   └── dependencies.py
 │   │
-│   ├── models/
+│   ├── models/                     # Database Models
 │   │   ├── __init__.py
 │   │   ├── user.py
 │   │   └── calculation.py
 │   │
-│   ├── schemas/
+│   ├── schemas/                    # Pydantic Schemas (Data Validation)
 │   │   ├── __init__.py
 │   │   ├── base.py
 │   │   ├── user.py
@@ -56,17 +66,14 @@ module14_is601/
 │   │   ├── token.py
 │   │   └── stats.py
 │   │
-│   ├── services/
+│   ├── services/                   # Business Logic Services
 │   │   └── statistics_service.py
 │   │
-│   ├── operations/
+│   ├── operations/                 # Modular arithmetic logic
 │   │   └── __init__.py
 │   │
-│   ├── static/
-│   │   └── (HTML/CSS/JS assets)
-│   │
-│   └── templates/
-│       └── (Jinja2 HTML templates)
+│   ├── static/                     # CSS/JS assets
+│   └── templates/                  # Jinja2 HTML templates
 │
 ├── tests/
 │   ├── unit/
@@ -80,159 +87,79 @@ module14_is601/
 ├── .github/
 │   └── workflows/
 │       └── test.yml
-│
 └── README.md
-```
+````
 
----
+-----
 
+## 📌 Folder Responsibilities
 
-# 📌 Folder Responsibilities
+### 🔹 `app/main.py`
 
-## 🔹 `app/main.py`
-
-**Role:** Application entry point
-
+**Role: Application entry point**
 Contains:
 
-* FastAPI app initialization
-* Route definitions (BREAD operations)
-* Dependency injection
-* Authentication enforcement
-* CSV export & reporting endpoints
-* Lifespan events (DB initialization)
+  * FastAPI app initialization
+  * Route definitions (BREAD operations)
+  * Dependency injection & Auth enforcement
+  * CSV export & reporting endpoints
+  * Lifespan events (DB initialization)
 
+### 🔹 `app/core/`
 
----
+**Role: Global configuration & environment management**
 
-## 🔹 `app/core/`
-
-**Role:** Global configuration & environment management
-
-| File        | Purpose                                                   |
-| ----------- | --------------------------------------------------------- |
+| File | Purpose |
+| :--- | :--- |
 | `config.py` | Loads environment variables, JWT secrets, expiry settings |
 
----
+### 🔹 `app/database.py`
 
-## 🔹 `app/database.py`
+**Role: Database configuration**
+Contains SQLAlchemy engine, SessionLocal, Declarative Base, and `get_db()` dependency. Used across routes, services, auth, and tests.
 
-**Role:** Database configuration
+### 🔹 `app/auth/`
 
-Contains:
+**Role: Security & authentication**
 
-* SQLAlchemy engine
-* SessionLocal
-* Declarative Base
-* `get_db()` dependency
+| File | Responsibility |
+| :--- | :--- |
+| `jwt.py` | Token creation, decoding, password hashing |
+| `dependencies.py` | Auth guards & access control |
 
-Used across:
+**Security Practices Implemented:**
 
-* Routes
-* Services
-* Authentication
-* Tests
+  * bcrypt password hashing
+  * JWT access & refresh tokens
+  * Token type enforcement & expiration validation
+  * Blacklist stubs (testable design)
 
----
+### 🔹 `app/models/`
 
-## 🔹 `app/auth/`
+**Role: Database models & business logic**
 
-**Role:** Security & authentication
+  * **`user.py`**: User registration, authentication, password hashing, token verification.
+  * **`calculation.py`**: Polymorphic calculation model, Factory pattern (`Calculation.create`). Supports: *Addition, Subtraction, Multiplication, Division, Exponentiation, Power, Modulus*.
 
-| File              | Responsibility                             |
-| ----------------- | ------------------------------------------ |
-| `jwt.py`          | Token creation, decoding, password hashing |
-| `dependencies.py` | Auth guards & access control               |
+### 🔹 `app/schemas/`
 
-### Security Practices Implemented
+**Role: Data validation & API contracts (Pydantic v2)**
 
-* bcrypt password hashing
-* JWT access & refresh tokens
-* Token type enforcement
-* Token expiration validation
-* Blacklist stubs (testable design)
-
----
-
-## 🔹 `app/models/`
-
-**Role:** Database models & business logic
-
-### `user.py`
-
-* User registration
-* Authentication
-* Password hashing & verification
-* Token verification
-* Account status handling
-
-### `calculation.py`
-
-* Polymorphic calculation model
-* Factory pattern (`Calculation.create`)
-* Supports:
-
-  * Addition
-  * Subtraction
-  * Multiplication
-  * Division
-  * Exponentiation
-  * Power
-  * Modulus
-
----
-
-## 🔹 `app/schemas/`
-
-**Role:** Data validation & API contracts
-
-| Schema           | Purpose                      |
-| ---------------- | ---------------------------- |
-| `base.py`        | Shared validation logic      |
-| `user.py`        | User create, login, update   |
+| Schema | Purpose |
+| :--- | :--- |
+| `base.py` | Shared validation logic |
+| `user.py` | User create, login, update |
 | `calculation.py` | Calculation request/response |
-| `token.py`       | Token response models        |
-| `stats.py`       | Aggregated statistics        |
+| `token.py` | Token response models |
+| `stats.py` | Aggregated statistics |
 
-Uses **Pydantic v2**:
+### 🔹 `app/services/`
 
-* Field validators
-* Model validators
-* Strong input constraints
-* Clear error messages
+**Role: Reusable business services**
 
----
+  * **`statistics_service.py`**: Computes user stats (total calculations, average operands, most-used operation, last timestamp).
 
-## 🔹 `app/services/`
-
-**Role:** Reusable business services
-
-### `statistics_service.py`
-
-* Computes user calculation statistics
-* Aggregates:
-
-  * Total calculations
-  * Average operands
-  * Most-used operation
-  * Last calculation timestamp
-
----
-
-## 🔹 `app/operations/`
-
-**Role:** Reserved for future extensions
-
-* Keeps arithmetic logic modular
-* Supports scalability
-* Prevents model bloating
-
----
-
-Perfect — below is a **clean, professional, copy-paste ready section** you can directly add to your **README.md**.
-It contains **only what you asked for**, written in a way professors expect.
-
----
+-----
 
 ## ▶️ Running the Application Locally
 
@@ -243,17 +170,13 @@ git clone <YOUR_GITHUB_REPOSITORY_URL>
 cd final_project
 ```
 
----
-
 ### 2️⃣ Create and Activate Virtual Environment
 
 ```bash
 python -m venv venv
-source venv/bin/activate   # macOS / Linux
-# venv\Scripts\activate    # Windows
+source venv/bin/activate    # macOS / Linux
+# venv\Scripts\activate     # Windows
 ```
-
----
 
 ### 3️⃣ Install Dependencies
 
@@ -264,13 +187,11 @@ pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
----
-
 ### 4️⃣ Configure Environment Variables
 
-Create a `.env` file in the project root.
+Create a `.env` file in the project root:
 
-```env
+```ini
 DATABASE_URL=postgresql://user:password@localhost:5432/fastapi_db
 TEST_DATABASE_URL=postgresql://user:password@localhost:5432/fastapi_test_db
 
@@ -285,8 +206,6 @@ BCRYPT_ROUNDS=12
 IS_TEST=false
 ```
 
----
-
 ### 5️⃣ Start the Application
 
 ```bash
@@ -295,19 +214,19 @@ uvicorn app.main:app --reload
 
 Application will be available at:
 
-* **Web UI:** [http://127.0.0.1:8000](http://127.0.0.1:8000)
-* **API Docs (Swagger):** [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
-* **Health Check:** [http://127.0.0.1:8000/health](http://127.0.0.1:8000/health)
+  * **Web UI:** [http://127.0.0.1:8000](http://127.0.0.1:8000)
+  * **API Docs (Swagger):** [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
+  * **Health Check:** [http://127.0.0.1:8000/health](http://127.0.0.1:8000/health)
 
----
+-----
 
 ## 🧪 Running Tests Locally
 
 This project follows a **layered testing strategy** (Unit → Integration → E2E).
 
----
+### 🔹 Run Unit Tests (with Coverage Enforcement)
 
-### 🔹 Run Unit Tests with Coverage Enforcement
+Enforces **≥90% backend coverage**, matching CI requirements.
 
 ```bash
 pytest tests/unit \
@@ -316,787 +235,240 @@ pytest tests/unit \
   --cov-fail-under=90
 ```
 
-✔ Enforces **≥90% backend coverage**, matching CI requirements.
-
----
-
 ### 🔹 Run Integration Tests
+
+Validates API routes and database interactions.
 
 ```bash
 pytest tests/integration
 ```
 
-✔ Validates API routes and database interactions.
-
----
-
 ### 🔹 Run End-to-End (E2E) Tests
+
+Tests full user flows (login → dashboard → calculation → export).
 
 ```bash
 playwright install
 pytest tests/e2e
 ```
 
-✔ Tests full user flows (login → dashboard → calculation → export).
-
----
+-----
 
 ## 🐳 Docker Hub Repository
 
 The application is fully **Dockerized** and automatically built via **GitHub Actions**.
 
-🔗 **Docker Hub Repository:**
+🔗 **Docker Hub Repository:** `https://hub.docker.com/r/<YOUR_DOCKERHUB_USERNAME>/fastapi-calculator`
 
-```
-https://hub.docker.com/r/<YOUR_DOCKERHUB_USERNAME>/fastapi-calculator
-```
-
-### Pull and Run the Image
+**Pull and Run the Image:**
 
 ```bash
 docker pull <YOUR_DOCKERHUB_USERNAME>/fastapi-calculator:latest
 docker run -p 8000:8000 <YOUR_DOCKERHUB_USERNAME>/fastapi-calculator
 ```
 
----
+-----
 
-## 📦 requirements.txt
-
-All dependencies required to run, test, and deploy the application are defined below:
-
-```txt
-# --- Core Framework ---
-fastapi==0.115.8
-uvicorn==0.34.0
-starlette==0.45.3
-
-# --- Database + ORM ---
-SQLAlchemy==2.0.38
-psycopg2-binary==2.9.10
-
-# --- Pydantic & Settings ---
-pydantic==2.10.6
-pydantic-settings==2.7.1
-pydantic_core==2.27.2
-annotated-types==0.7.0
-
-# --- Authentication (JWT + Password Hashing) ---
-python-jose==3.3.0
-passlib==1.7.4
-bcrypt==4.2.1
-python-multipart==0.0.20
-
-# --- Email Validation ---
-email_validator==2.2.0
-dnspython==2.7.0
-
-# --- Utilities ---
-requests==2.32.3
-python-dotenv==1.0.1
-tenacity==9.0.0
-Faker==36.1.0
-typing_extensions==4.12.2
-
-# --- Testing ---
-pytest==8.3.4
-pytest-cov==6.0.0
-coverage==7.6.11
-httpx==0.28.1
-
-# --- E2E Testing (Playwright) ---
-playwright==1.50.0
-pyee==12.1.1
-
-# --- Internal C libs ---
-cffi==1.17.1
-pycparser==2.22
-cryptography==44.0.0
-
-# --- Networking / HTTP ---
-h11==0.14.0
-httpcore==1.0.7
-sniffio==1.3.1
-urllib3==2.3.0
-idna==3.10
-charset-normalizer==3.4.1
-
-# --- Misc ---
-tzdata==2025.1
-MarkupSafe==3.0.2
-Jinja2==3.1.5
-```
-
----
-
-
-## 2) Project Requirements Checklist
+## 2\) Project Requirements Checklist
 
 ### ✅ Choose and Implement a New Feature
 
-Implemented: **Report/History Feature**
+**Implemented: Report/History Feature**
 
-* User calculation history stored in DB
-* Usage statistics endpoint (`/calculations/stats`)
-* CSV report export endpoint (`/calculations/export`, `/calculations/report.csv`)
-* UI displays stats and supports download
+  - [x] User calculation history stored in DB
+  - [x] Usage statistics endpoint (`/calculations/stats`)
+  - [x] CSV report export endpoint (`/calculations/export`)
+  - [x] UI displays stats and supports download
 
-Also included as “Additional Calculation Type”:
+**Additional Calculation Types:**
 
-* Added advanced operations: **Exponentiation**, **Power**, **Modulus**
-* Updated schema validation and backend creation logic
+  - [x] Added **Exponentiation**, **Power**, **Modulus**
 
 ### ✅ Backend
 
-* SQLAlchemy models for Users and Calculations
-* Pydantic schemas for validation (inputs, password rules)
-* FastAPI routes for auth + calculations + reporting
-* Services layer for statistics aggregation
+  - [x] SQLAlchemy models for Users and Calculations
+  - [x] Pydantic schemas for validation
+  - [x] FastAPI routes for auth, calculations, and reporting
+  - [x] Services layer for statistics aggregation
 
 ### ✅ Frontend
 
-* Pages: Home, Register, Login, Dashboard, View Calculation, Edit Calculation
-* Client-side behavior uses API endpoints and localStorage token persistence (validated in E2E tests)
+  - [x] Pages: Home, Register, Login, Dashboard, View, Edit
+  - [x] Client-side behavior uses API & localStorage token persistence
 
 ### ✅ Testing
 
-* **Unit tests:** pure logic (JWT utilities, schema validators, models, statistics service)
-* **Integration tests:** routes + DB interaction + auth dependency behavior
-* **E2E tests:** Playwright browser workflow (register → login → dashboard → calculation → stats → CSV export)
+  - [x] **Unit tests:** Logic, utilities, models
+  - [x] **Integration tests:** Routes, DB, Auth
+  - [x] **E2E tests:** Playwright browser workflows
 
 ### ✅ CI/CD + Docker Deployment
 
-* GitHub Actions pipeline:
+  - [x] GitHub Actions pipeline (Install -\> Test -\> Coverage -\> Security Scan -\> Build -\> Push)
 
-  * installs dependencies
-  * runs tests
-  * enforces coverage threshold (professor requirement)
-  * runs security scan
-  * builds and pushes Docker image after passing pipeline
+-----
 
----
-
-## 3) Key Features Implemented
+## 3\) Key Features Implemented
 
 ### Authentication & Users
 
-* Secure password hashing (bcrypt via passlib)
-* JWT access + refresh token generation
-* Token decoding and validation (type checks, expiration handling)
-* Active-user enforcement in dependencies
+  * Secure password hashing (bcrypt via passlib).
+  * JWT access + refresh token generation with active-user enforcement.
+  * Token decoding, validation, and expiration handling.
 
 ### Calculations Engine
 
-* Calculation types implemented using polymorphic SQLAlchemy models
-* Factory method `Calculation.create()` to generate correct operation class
-* Operation classes validate input constraints and compute result
-* Stored history includes inputs, results, timestamps
+  * Polymorphic SQLAlchemy models with Factory method `Calculation.create()`.
+  * Supports: Addition, Subtraction, Multiplication, Division, Exponentiation, Power, Modulus.
 
-### BREAD Operations on Calculations
+### BREAD Operations
 
-BREAD = **Browse, Read, Edit, Add, Delete**
-This project implements BREAD fully for the **calculation resource**:
+**BREAD = Browse, Read, Edit, Add, Delete**
+All actions are **user-scoped** (users only access their own records).
 
-* **Add:** `POST /calculations` → create new calculation
-* **Browse:** `GET /calculations` → list user calculations
-* **Read:** `GET /calculations/{calc_id}` → view single calculation
-* **Edit:** `PUT /calculations/{calc_id}` → update inputs (recalculate result)
-* **Delete:** `DELETE /calculations/{calc_id}` → delete a calculation
+### Reporting & History
 
-All BREAD actions are **user-scoped** (a user can only access their own records).
+  * **Stats:** Total calculations, average operands, operation breakdown.
+  * **Export:** CSV export via `StreamingResponse`.
 
-### Reporting & History (New Feature)
+-----
 
-* `GET /calculations/stats` returns:
+## 5\) High-Level Architecture
 
-  * total calculations
-  * average operands
-  * operation breakdown
-  * most-used operation
-  * most recent calculation timestamp
-* CSV export endpoint generates downloadable report
+**Request Flow:**
 
----
+1.  User registers/logs in → Backend generates **JWT**.
+2.  UI stores tokens in `localStorage`.
+3.  Requests sent with `Authorization: Bearer <token>`.
+4.  **Dependencies:** Decode token, verify active user, scope queries to user ID.
+5.  Results stored in DB; Statistics computed via service layer.
 
-## 4) Tech Stack
+**Separation of Concerns:**
 
-**Backend**
+  * `models/`: Persistence + Business methods
+  * `schemas/`: Validation + API shape
+  * `services/`: Aggregation logic
+  * `auth/`: Security helpers
+  * `main.py`: Routes
 
-* FastAPI
-* SQLAlchemy
-* Pydantic v2
-* python-jose (JWT)
-* passlib + bcrypt
+-----
 
-**Database**
+## 8\) API Design (BREAD Endpoints)
 
-* PostgreSQL (CI & Docker)
-* SQLite supported for local dev/testing (depending on environment config)
+### 🧮 Calculation BREAD Endpoints
 
-**Frontend**
+| BREAD | HTTP Method | Endpoint | Auth | Description |
+| :--- | :--- | :--- | :--- | :--- |
+| **Add** | `POST` | `/calculations` | ✅ Yes | Create a new calculation and persist result |
+| **Browse** | `GET` | `/calculations` | ✅ Yes | List all calculations for the logged-in user |
+| **Read** | `GET` | `/calculations/{calc_id}` | ✅ Yes | Retrieve a specific calculation by ID |
+| **Edit** | `PUT` | `/calculations/{calc_id}` | ✅ Yes | Update inputs and recompute result |
+| **Delete** | `DELETE` | `/calculations/{calc_id}` | ✅ Yes | Delete a calculation owned by the user |
 
-* HTML + Jinja2 Templates
-* Static JS/CSS
-* Token stored in localStorage and used in dashboard requests
+### 📊 Reporting & History Endpoints
 
-**Testing**
+| HTTP Method | Endpoint | Auth | Description |
+| :--- | :--- | :--- | :--- |
+| `GET` | `/calculations/stats` | ✅ Yes | Returns user calculation statistics and summaries |
+| `GET` | `/calculations/export` | ✅ Yes | Export calculation history as CSV |
+| `GET` | `/calculations/report.csv` | ✅ Yes | Alternate CSV export route |
 
-* pytest
-* pytest-cov (coverage)
-* httpx / requests (API testing)
-* Playwright (E2E UI tests)
+-----
 
-**CI/CD**
+## 10\) Frontend Pages and Flow
 
-* GitHub Actions
-* Docker Buildx
-* Trivy security scan
-* Docker Hub push
+| HTTP Method | Endpoint | Purpose |
+| :--- | :--- | :--- |
+| `GET` | `/` | Landing page |
+| `GET` | `/login` | Login page |
+| `GET` | `/register` | Registration page |
+| `GET` | `/dashboard` | User dashboard (Stats + List) |
+| `GET` | `/dashboard/view/{calc_id}` | View calculation |
+| `GET` | `/dashboard/edit/{calc_id}` | Edit calculation |
 
----
+-----
 
-## 5) High-Level Architecture
+## 11\) Testing Strategy
 
-Request flow:
+This project follows a layered testing strategy aligned with industry best practices.
 
-1. User registers or logs in
-2. Backend generates **JWT access + refresh tokens**
-3. UI stores tokens in localStorage
-4. UI calls protected endpoints with `Authorization: Bearer <token>`
-5. FastAPI dependencies:
+### 🧱 Testing Pyramid Overview
 
-   * decode token
-   * verify user is active
-   * scope queries to authenticated user
-6. Results stored and retrieved from database
-7. Statistics computed via service layer
+| Layer | Purpose | Scope |
+| :--- | :--- | :--- |
+| **Unit Tests** | Validate isolated logic | Models, services, schemas, utilities |
+| **Integration Tests** | Validate API + DB interaction | Routes, auth, persistence |
+| **E2E Tests** | Validate real user flows | UI + API + auth |
 
-Key separation of concerns:
+### 📌 Unit Test Coverage Map (`tests/unit/`)
 
-* **models/**: persistence + business methods
-* **schemas/**: validation and API data shape
-* **services/**: aggregation logic (stats)
-* **auth/**: security helpers and dependencies
-* **main.py**: route definitions and app wiring
+| Test File | Covers | Application File |
+| :--- | :--- | :--- |
+| `test_calculator.py` | Basic arithmetic logic | `app/models/calculation.py` |
+| `test_calculation_factory_unit.py` | Factory pattern mapping | `Calculation.create()` |
+| `test_calculation_operations_unit.py` | Add/Sub/Mul/Div/Power/Modulus | Operation subclasses |
+| `test_calculation_schema_unit.py` | Input validation | `app/schemas/calculation.py` |
+| `test_dependencies_unit.py` | Auth dependency logic | `app/auth/dependencies.py` |
+| `test_jwt_unit.py` | Token creation & decoding | `app/auth/jwt.py` |
+| `test_user_unit.py` | User model behavior | `app/models/user.py` |
+| `test_statistics_service_unit.py` | Stats computation | `compute_user_stats()` |
 
----
+### 📌 Integration Test Coverage Map (`tests/integration/`)
 
-## 6) Security Implementation
+| Test File | Covers | Application Area |
+| :--- | :--- | :--- |
+| `test_auth_routes.py` | Register + login routes | `/auth/*` |
+| `test_calculation_routes.py` | CRUD calculations | `/calculations` |
+| `test_api_new_operations.py` | Advanced ops (power, modulus) | Calculation extensions |
+| `test_api_stats_and_report.py` | CSV + stats endpoints | Export & reporting |
+| `test_database.py` | DB initialization | `database.py` |
 
-### Password Hashing
+### 📌 E2E Test Coverage Map (`tests/e2e/`)
 
-* Passwords are hashed using **bcrypt** through passlib’s `CryptContext`
-* Plaintext passwords are never stored
-* Verification uses constant-time hash comparison from passlib
+| Test File | Covers | Scenario |
+| :--- | :--- | :--- |
+| `test_fastapi_calculator.py` | API + UI flow | Login → Calculate |
+| `test_ui_playwright.py` | Browser automation | Full UI journey |
 
-### JWT Security
+-----
 
-* Access token + refresh token creation with `exp`, `iat`, and `jti`
-* `decode_token()` validates:
+## 14\) CI/CD Pipeline (`.github/workflows/test.yml`)
 
-  * signature
-  * expiration (`ExpiredSignatureError`)
-  * token type (“access” vs “refresh”)
-* Revocation support stubbed via blacklist functions:
+The CI pipeline is designed to satisfy both real-world best practices and professor requirements.
 
-  * `is_blacklisted(jti)` (stubbed to False by default)
-  * written to allow testing monkeypatch and future Redis integration
+1.  **Test Job:**
+      * Sets up Python & Dependencies.
+      * Installs Playwright browsers.
+      * Runs Unit Tests (**Enforces 90% Coverage**).
+      * Runs Integration & E2E Tests.
+2.  **Security Job:**
+      * Runs **Trivy** scan on the Docker image.
+3.  **Deploy Job:**
+      * Builds & Pushes image to **Docker Hub** (on `main` branch).
 
-### Authorization / Access Control
+-----
 
-* Critical endpoints require authentication
-* Calculation access always checks:
+## 16\) Configuration: `.env` and `requirements.txt`
 
-  * the resource exists
-  * `Calculation.user_id == current_user.id`
-* Inactive user is blocked using dependency `get_current_active_user()`
+### `.env` File
 
----
-
-## 7) Database Design and ORM Models
-
-### `User` Model (`app/models/user.py`)
-
-Core responsibilities:
-
-* register user with hashed password
-* authenticate by username/email + password
-* update last_login
-* verify tokens safely
-
-Relationship:
-
-* One user → many calculations (`calculations` relationship)
-
-### `Calculation` Model (`app/models/calculation.py`)
-
-Design approach:
-
-* Polymorphic inheritance (`polymorphic_on="type"`)
-* Subclasses implement `get_result()` with strict validation:
-
-  * min operand checks
-  * divide by zero protection
-  * modulus by zero protection
-* Factory method:
-
-  * `Calculation.create(calculation_type, user_id, inputs)` returns correct subclass
-
-This design allows:
-
-* clean extension of new operations
-* consistent persistence structure
-
----
-
-## 8) API Design (BREAD Endpoints)
-
-### Add (Create)
-
-`POST /calculations`
-
-* Validates schema
-* Creates calculation object via factory
-* Computes result and persists
-* Returns created record
-
-### Browse (List)
-
-`GET /calculations`
-
-* Returns all calculations for current user
-
-### Read (Single)
-
-`GET /calculations/{calc_id}`
-
-* Validates UUID
-* Only allows access if owned by user
-
-### Edit (Update)
-
-`PUT /calculations/{calc_id}`
-
-* Validates UUID
-* Updates inputs
-* Recomputes result
-* Updates timestamp
-
-### Delete
-
-`DELETE /calculations/{calc_id}`
-
-* Validates UUID
-* Deletes record if owned by user
-
----
-
-🧮 Calculation BREAD Endpoints
-
-
-| BREAD      | HTTP Method | Endpoint                  | Auth Required | Description                                  |
-| ---------- | ----------- | ------------------------- | ------------- | -------------------------------------------- |
-| **Add**    | POST        | `/calculations`           | ✅ Yes         | Create a new calculation and persist result  |
-| **Browse** | GET         | `/calculations`           | ✅ Yes         | List all calculations for the logged-in user |
-| **Read**   | GET         | `/calculations/{calc_id}` | ✅ Yes         | Retrieve a specific calculation by ID        |
-| **Edit**   | PUT         | `/calculations/{calc_id}` | ✅ Yes         | Update inputs and recompute result           |
-| **Delete** | DELETE      | `/calculations/{calc_id}` | ✅ Yes         | Delete a calculation owned by the user       |
-
----
-
-## 9) Reporting & Statistics Feature
-
-### Stats Service (`app/services/statistics_service.py`)
-
-`compute_user_stats(db, user_id)`:
-
-* Normalizes user_id for UUID safety
-* Queries DB for user calculations
-* Computes:
-
-  * total count
-  * mean operand count
-  * breakdown by operation type
-  * most used operation
-  * last calculation date (ISO8601)
-
-### Stats Endpoint
-
-`GET /calculations/stats`
-
-* Protected
-* Returns `CalculationStats` schema
-
-### CSV Export Endpoint
-
-`GET /calculations/export` or `/calculations/report.csv`
-
-* Protected
-* Generates CSV from DB records
-* Returns file download via `StreamingResponse`
-  
----
-
-📊 Reporting & History Endpoints (New Feature)
-
-| HTTP Method | Endpoint                   | Auth Required | Description                                       |
-| ----------- | -------------------------- | ------------- | ------------------------------------------------- |
-| GET         | `/calculations/stats`      | ✅ Yes         | Returns user calculation statistics and summaries |
-| GET         | `/calculations/export`     | ✅ Yes         | Export calculation history as CSV                 |
-| GET         | `/calculations/report.csv` | ✅ Yes         | Alternate CSV export route                        |
-
----
-
-## 10) Frontend Pages and Flow
-
-Pages served from `templates/` (Jinja2):
-
-* `/` Home
-* `/register`
-* `/login`
-* `/dashboard`
-* `/dashboard/view/{calc_id}`
-* `/dashboard/edit/{calc_id}`
-
-Dashboard behavior:
-
-* requires token in localStorage
-* uses API to create calculations + show history
-* stats panel calls `/calculations/stats`
-* download button calls `/calculations/export`
-
----
-
-🌐 Frontend / UI Routes (Template-Based)
-
-| HTTP Method | Endpoint                    | Purpose           |
-| ----------- | --------------------------- | ----------------- |
-| GET         | `/`                         | Landing page      |
-| GET         | `/login`                    | Login page        |
-| GET         | `/register`                 | Registration page |
-| GET         | `/dashboard`                | User dashboard    |
-| GET         | `/dashboard/view/{calc_id}` | View calculation  |
-| GET         | `/dashboard/edit/{calc_id}` | Edit calculation  |
-
-
----
-
-## 11) Testing Strategy (Unit + Integration + E2E)
-
-This project follows a layered testing strategy aligned with industry best practices, ensuring correctness at the logic, API, and user-experience levels.
-
-🧱 Testing Pyramid Overview
-
-| Layer                 | Purpose                       | Scope                                |
-| --------------------- | ----------------------------- | ------------------------------------ |
-| **Unit Tests**        | Validate isolated logic       | Models, services, schemas, utilities |
-| **Integration Tests** | Validate API + DB interaction | Routes, auth, persistence            |
-| **E2E Tests**         | Validate real user flows      | UI + API + auth                      |
-
-
-### Unit Tests (`tests/unit/`)
-
-Focus:
-
-* pure logic and validators
-* avoids real DB whenever possible
-
-Examples:
-
-* JWT encode/decode behavior
-* dependencies logic handling payload types
-* statistics aggregation logic
-* schema validators for calculation types and password rules
-* model token verification edge cases
-
-📌 Unit Test Coverage Map
-
-| Test File                             | Covers                           | Application File             |
-| ------------------------------------- | -------------------------------- | ---------------------------- |
-| `test_calculator.py`                  | Basic arithmetic logic           | `app/models/calculation.py`  |
-| `test_calculation_factory_unit.py`    | Factory pattern mapping          | `Calculation.create()`       |
-| `test_calculation_operations_unit.py` | Add/Sub/Mul/Div/Power/Modulus    | Operation subclasses         |
-| `test_calculation_schema_unit.py`     | Input validation                 | `app/schemas/calculation.py` |
-| `test_dependencies_unit.py`           | Auth dependency logic            | `app/auth/dependencies.py`   |
-| `test_jwt_unit.py`                    | Token creation & decoding        | `app/auth/jwt.py`            |
-| `test_jwt_edge_cases_unit.py`         | Expired, invalid, revoked tokens | `decode_token()`             |
-| `test_user_unit.py`                   | User model behavior              | `app/models/user.py`         |
-| `test_user_register_unit.py`          | Registration rules               | `User.register()`            |
-| `test_user_authenticate_unit.py`      | Login logic                      | `User.authenticate()`        |
-| `test_user_verify_token_unit.py`      | Token verification               | `User.verify_token()`        |
-| `test_schema_base_unit.py`            | Base schema validation           | `app/schemas/base.py`        |
-| `test_user_schema_unit.py`            | Password rules                   | `app/schemas/user.py`        |
-| `test_statistics_service_unit.py`     | Stats computation                | `compute_user_stats()`       |
-
-
-### Integration Tests (`tests/integration/`)
-
-Focus:
-
-* real FastAPI app routing + DB behavior
-* request/response validation
-* authentication handling across real endpoints
-
-📌 Integration Test Coverage Map
-
-| Test File                      | Covers                        | Application Area       |
-| ------------------------------ | ----------------------------- | ---------------------- |
-| `test_auth_routes.py`          | Register + login routes       | `/auth/*`              |
-| `test_user_auth.py`            | Authenticated access          | JWT + DB               |
-| `test_calculation_routes.py`   | CRUD calculations             | `/calculations`        |
-| `test_api_new_operations.py`   | Advanced ops (power, modulus) | Calculation extensions |
-| `test_calculation.py`          | DB persistence                | Calculation model      |
-| `test_calculation_schema.py`   | Request/response schema       | Calculation schemas    |
-| `test_statistics_service.py`   | Stats endpoint                | `/calculations/stats`  |
-| `test_api_stats_and_report.py` | CSV + stats endpoints         | Export & reporting     |
-| `test_dependencies.py`         | Dependency injection          | Auth dependencies      |
-| `test_database.py`             | DB initialization             | `database.py`          |
-| `test_schema_base.py`          | Shared schema validation      | Base schemas           |
-| `test_user.py`                 | User DB behavior              | User model             |
-| `test_jwt_extra_coverage.py`   | JWT edge scenarios            | Auth security          |
-
-
-### E2E Tests (`tests/e2e/`)
-
-Focus:
-
-* browser workflow using Playwright:
-
-  * register user
-  * login
-  * dashboard behavior
-  * create calculation
-  * verify history update
-  * verify stats panel
-  * verify CSV download
- 
-📌 E2E Test Coverage Map
-
-| Test File                    | Covers             | Scenario          |
-| ---------------------------- | ------------------ | ----------------- |
-| `test_fastapi_calculator.py` | API + UI flow      | Login → Calculate |
-| `test_ui_playwright.py`      | Browser automation | Full UI journey   |
-| `test_e2e.bk`                | Backup scenarios   | Regression safety |
-
-
----
-
-## 12) Test Infrastructure
-
-### `tests/unit/conftest.py` (Dynamic Import Strategy)
-
-This file auto-imports all modules inside `app.*` to ensure:
-
-* coverage tools see modules loaded
-* dead/unimported modules don’t appear as 0% coverage unexpectedly
-* consistent discovery in CI
-
-```python
-import pkgutil
-import app
-
-for _, module_name, _ in pkgutil.walk_packages(app.__path__, "app."):
-    __import__(module_name)
-```
-
-### Database Test Isolation
-
-* CI uses Postgres service
-* Integration tests use a test DB URL and `IS_TEST=true`
-* ORM sessions are controlled through FastAPI dependency `get_db`
-
----
-
-## 13) Code Structure
-
-```
-app/
-  auth/
-    jwt.py
-    dependencies.py
-  models/
-    user.py
-    calculation.py
-  schemas/
-    base.py
-    user.py
-    calculation.py
-    token.py
-    stats.py
-  services/
-    statistics_service.py
-  database.py
-  database_init.py
-  main.py
-
-tests/
-  unit/
-  integration/
-  e2e/
-```
-
----
-
-## 14) CI/CD Pipeline (`.github/workflows/test.yml`)
-
-The CI pipeline is designed to satisfy both:
-
-1. Real-world CI best practices
-2. Professor requirements (tests + coverage)
-
-### Pipeline stages
-
-* **Test job**
-
-  * sets up python
-  * installs dependencies
-  * installs Playwright browsers
-  * runs unit tests with coverage enforcement
-  * runs integration tests
-  * runs E2E tests
-* **Security job**
-
-  * runs Trivy scan on built Docker image
-* **Deploy job**
-
-  * builds + pushes Docker image to Docker Hub (only on main)
-
-Key quality gates:
-
-* Tests must pass
-* Coverage threshold must be met
-* Security scan must pass (or must be configured appropriately)
-
----
-
-## 15) Dockerization
-
-The project includes a Dockerfile to run the application consistently.
-Dockerization ensures:
-
-* reproducible runtime environment
-* easy deployment
-* consistent behavior in CI/CD
-
-Typical Docker responsibilities:
-
-* install requirements
-* copy application code
-* expose port and run uvicorn
-
-If your professor runs:
-
-```bash
-docker build -t fastapi-calculator .
-docker run -p 8001:8001 fastapi-calculator
-```
-
-the application will start the backend and serve UI routes.
-
----
-
-## 16) Configuration: `.env`, Settings, Requirements
-
-### `.env`
-
-Environment variables used (typical):
-
-* `DATABASE_URL`
-* `TEST_DATABASE_URL`
-* `JWT_SECRET_KEY`
-* `JWT_REFRESH_SECRET_KEY`
-* token expiry configs
-* bcrypt rounds (`BCRYPT_ROUNDS`)
-* `IS_TEST=true` for test mode
+Used for `DATABASE_URL`, `JWT_SECRET_KEY`, `BCRYPT_ROUNDS`, and `IS_TEST`.
 
 ### `requirements.txt`
 
-Pinned dependencies ensure reproducibility across machines and CI.
+Dependencies are pinned to ensure reproducibility. Key libraries include:
 
-Note on dependency conflicts:
+  * `fastapi`, `uvicorn`, `starlette` (Core)
+  * `SQLAlchemy`, `psycopg2-binary` (DB)
+  * `pydantic` (Validation)
+  * `python-jose`, `passlib`, `bcrypt` (Auth)
+  * `pytest`, `playwright`, `httpx` (Testing)
 
-* Some packages have strict transitive constraints (e.g., FastAPI ↔ Starlette)
-* The correct approach used here is pinning compatible versions (and avoiding manually forcing incompatible versions)
-
----
-
-## 17) How to Run Locally
-
-```bash
-python -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
-
-uvicorn app.main:app --reload --port 8001
-```
-
-Open:
-
-* Home: `http://127.0.0.1:8001/`
-* Login/Register: via UI
-
----
-
-## 18) How to Run Tests and Coverage
-
-Run full unit test coverage:
-
-```bash
-pytest tests/unit/ --cov=app --cov-report=term-missing
-```
-
-Enforce professor requirement:
-
-```bash
-pytest tests/unit/ --cov=app --cov-fail-under=90
-```
-
-Run integration:
-
-```bash
-pytest tests/integration/
-```
-
-Run E2E:
-
-```bash
-pytest tests/e2e/
-```
-
----
-
-## 19) Notes on Coverage and Grading Considerations
-
-* Some UI routes in `main.py` are intentionally excluded using `# pragma: no cover`
-
-  * This avoids penalizing coverage for template-rendering boilerplate
-  * Coverage focuses on real logic: auth, models, schemas, services
-* Unit tests are expanded specifically to cover:
-
-  * JWT utilities
-  * dependencies
-  * stats service
-  * schemas validators
-  * user model token verification edge cases
-
-This ensures:
-
-* the professor’s coverage requirement is satisfied
-* the coverage number reflects meaningful testing
-
----
+-----
 
 # Conclusion
 
-This project demonstrates an end-to-end FastAPI system including:
+This project demonstrates an end-to-end FastAPI system including secure auth, DB-backed CRUD/BREAD resources, reporting implementation, frontend integration, thorough tests at multiple levels, CI/CD enforcement, and Docker deployment readiness.
 
-* secure auth
-* DB-backed CRUD/BREAD resources
-* reporting feature implementation
-* frontend integration
-* thorough tests at multiple levels
-* CI/CD enforcement
-* Docker deployment readiness
-
-Everything is implemented in a way that is consistent with professional backend engineering practices and aligns with the assignment rubric.
-
----
+```
+```
