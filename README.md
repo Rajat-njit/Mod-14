@@ -302,6 +302,16 @@ This design allows:
 * Validates UUID
 * Deletes record if owned by user
 
+
+
+| BREAD      | HTTP Method | Endpoint                  | Auth Required | Description                                  |
+| ---------- | ----------- | ------------------------- | ------------- | -------------------------------------------- |
+| **Add**    | POST        | `/calculations`           | ✅ Yes         | Create a new calculation and persist result  |
+| **Browse** | GET         | `/calculations`           | ✅ Yes         | List all calculations for the logged-in user |
+| **Read**   | GET         | `/calculations/{calc_id}` | ✅ Yes         | Retrieve a specific calculation by ID        |
+| **Edit**   | PUT         | `/calculations/{calc_id}` | ✅ Yes         | Update inputs and recompute result           |
+| **Delete** | DELETE      | `/calculations/{calc_id}` | ✅ Yes         | Delete a calculation owned by the user       |
+
 ---
 
 ## 9) Reporting & Statistics Feature
