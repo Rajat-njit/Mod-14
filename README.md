@@ -21,7 +21,7 @@ This README is intentionally detailed because it is used for grading and explain
 
 ---
 
-# 📁 Project Structure
+## 📁 Project Structure
 
 ```
 module14_is601/
