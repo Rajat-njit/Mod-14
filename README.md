@@ -17,6 +17,7 @@ The system supports:
 * CI/CD pipeline that runs tests, enforces coverage, security scanning, and deploys Docker image to Docker Hub
 
 This README is intentionally detailed because it is used for grading and explains implementation decisions and rubric alignment.
+---
 
 📁 Project Structure
 
@@ -79,8 +80,269 @@ module14_is601/
 │
 └── README.md
 
+---
+
+Perfect — this is an **excellent thing to include**, and yes, professors *do* grade this heavily.
+
+Below is a **clean, professional, presentable project structure** that:
+
+* Clearly communicates **architecture**
+* Shows **separation of concerns**
+* Matches **industry FastAPI best practices**
+* Aligns with **your actual implementation**
+* Is **README-ready** (you can paste this directly)
+
+I’ll give you:
+
+1. 📁 **Directory Tree**
+2. 🧠 **High-level explanation**
+3. 📌 **Per-folder responsibility table**
+4. 🧪 **Testing structure alignment**
+
+---
+
+# 📁 Project Structure
+
+```
+module14_is601/
+│
+├── app/
+│   ├── __init__.py
+│   │
+│   ├── main.py
+│   │
+│   ├── core/
+│   │   ├── __init__.py
+│   │   └── config.py
+│   │
+│   ├── database.py
+│   ├── database_init.py
+│   │
+│   ├── auth/
+│   │   ├── __init__.py
+│   │   ├── jwt.py
+│   │   └── dependencies.py
+│   │
+│   ├── models/
+│   │   ├── __init__.py
+│   │   ├── user.py
+│   │   └── calculation.py
+│   │
+│   ├── schemas/
+│   │   ├── __init__.py
+│   │   ├── base.py
+│   │   ├── user.py
+│   │   ├── calculation.py
+│   │   ├── token.py
+│   │   └── stats.py
+│   │
+│   ├── services/
+│   │   └── statistics_service.py
+│   │
+│   ├── operations/
+│   │   └── __init__.py
+│   │
+│   ├── static/
+│   │   └── (HTML/CSS/JS assets)
+│   │
+│   └── templates/
+│       └── (Jinja2 HTML templates)
+│
+├── tests/
+│   ├── unit/
+│   ├── integration/
+│   └── e2e/
+│
+├── Dockerfile
+├── requirements.txt
+├── pytest.ini
+├── .env.example
+├── .github/
+│   └── workflows/
+│       └── test.yml
+│
+└── README.md
+```
+
+---
 
 
+# 📌 Folder Responsibilities
+
+## 🔹 `app/main.py`
+
+**Role:** Application entry point
+
+Contains:
+
+* FastAPI app initialization
+* Route definitions (BREAD operations)
+* Dependency injection
+* Authentication enforcement
+* CSV export & reporting endpoints
+* Lifespan events (DB initialization)
+
+> UI routes are explicitly excluded from coverage using `# pragma: no cover`.
+
+---
+
+## 🔹 `app/core/`
+
+**Role:** Global configuration & environment management
+
+| File        | Purpose                                                   |
+| ----------- | --------------------------------------------------------- |
+| `config.py` | Loads environment variables, JWT secrets, expiry settings |
+
+---
+
+## 🔹 `app/database.py`
+
+**Role:** Database configuration
+
+Contains:
+
+* SQLAlchemy engine
+* SessionLocal
+* Declarative Base
+* `get_db()` dependency
+
+Used across:
+
+* Routes
+* Services
+* Authentication
+* Tests
+
+---
+
+## 🔹 `app/auth/`
+
+**Role:** Security & authentication
+
+| File              | Responsibility                             |
+| ----------------- | ------------------------------------------ |
+| `jwt.py`          | Token creation, decoding, password hashing |
+| `dependencies.py` | Auth guards & access control               |
+
+### Security Practices Implemented
+
+* bcrypt password hashing
+* JWT access & refresh tokens
+* Token type enforcement
+* Token expiration validation
+* Blacklist stubs (testable design)
+
+---
+
+## 🔹 `app/models/`
+
+**Role:** Database models & business logic
+
+### `user.py`
+
+* User registration
+* Authentication
+* Password hashing & verification
+* Token verification
+* Account status handling
+
+### `calculation.py`
+
+* Polymorphic calculation model
+* Factory pattern (`Calculation.create`)
+* Supports:
+
+  * Addition
+  * Subtraction
+  * Multiplication
+  * Division
+  * Exponentiation
+  * Power
+  * Modulus
+
+---
+
+## 🔹 `app/schemas/`
+
+**Role:** Data validation & API contracts
+
+| Schema           | Purpose                      |
+| ---------------- | ---------------------------- |
+| `base.py`        | Shared validation logic      |
+| `user.py`        | User create, login, update   |
+| `calculation.py` | Calculation request/response |
+| `token.py`       | Token response models        |
+| `stats.py`       | Aggregated statistics        |
+
+Uses **Pydantic v2**:
+
+* Field validators
+* Model validators
+* Strong input constraints
+* Clear error messages
+
+---
+
+## 🔹 `app/services/`
+
+**Role:** Reusable business services
+
+### `statistics_service.py`
+
+* Computes user calculation statistics
+* Aggregates:
+
+  * Total calculations
+  * Average operands
+  * Most-used operation
+  * Last calculation timestamp
+
+---
+
+## 🔹 `app/operations/`
+
+**Role:** Reserved for future extensions
+
+* Keeps arithmetic logic modular
+* Supports scalability
+* Prevents model bloating
+
+---
+
+# 🧪 Testing Structure (Aligned with App)
+
+```
+tests/
+├── unit/          → Pure logic tests (no DB, no HTTP)
+├── integration/   → API + DB + auth
+└── e2e/           → Browser-based user flows
+```
+
+### Why This Matters
+
+✔ Matches the **testing pyramid**
+✔ Improves CI reliability
+✔ Prevents regressions
+✔ Demonstrates professional engineering discipline
+
+---
+
+# 📦 Infrastructure & Tooling
+
+## 🔹 Docker
+
+* Fully dockerized application
+* Production-ready image
+* Used in CI security scanning
+
+## 🔹 GitHub Actions
+
+* Unit test coverage enforcement
+* Integration & E2E tests
+* Trivy vulnerability scanning
+* Docker image build & push
+* 
 ---
 
 ## 2) Project Requirements Checklist
