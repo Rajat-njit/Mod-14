@@ -1,8 +1,6 @@
 
 # FastAPI Calculator — Full-Stack Web App with JWT Auth, BREAD Operations, Reporting, and CI/CD
 
-![Python](https://img.shields.io/badge/Python-3.10%2B-blue?style=for-the-badge&logo=python)
-![FastAPI](https://img.shields.io/badge/FastAPI-0.115.8-009688?style=for-the-badge&logo=fastapi)
 [![FastAPI Calculator – CI/CD Pipeline](https://github.com/Rajat-njit/fastapi-calculator-final/actions/workflows/test.yml/badge.svg)](https://github.com/Rajat-njit/fastapi-calculator-final/actions/workflows/test.yml)
 
 ## 1) Project Summary
