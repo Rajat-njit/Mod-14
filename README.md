@@ -3,8 +3,6 @@
 
 ![Python](https://img.shields.io/badge/Python-3.10%2B-blue?style=for-the-badge&logo=python)
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.115.8-009688?style=for-the-badge&logo=fastapi)
-![Docker](https://img.shields.io/badge/Docker-Enabled-2496ED?style=for-the-badge&logo=docker)
-![Coverage](https://img.shields.io/badge/Coverage-90%25%2B-brightgreen?style=for-the-badge)
 ![Build](https://img.shields.io/badge/Build-Passing-success?style=for-the-badge)
 
 ## 1) Project Summary
@@ -463,6 +461,9 @@ Dependencies are pinned to ensure reproducibility. Key libraries include:
 # Conclusion
 
 This project demonstrates an end-to-end FastAPI system including secure auth, DB-backed CRUD/BREAD resources, reporting implementation, frontend integration, thorough tests at multiple levels, CI/CD enforcement, and Docker deployment readiness.
+
+----
+## Author: Rajat Pednekar
 
 ```
 ```
